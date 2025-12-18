@@ -1,4 +1,4 @@
-# token_stats_enhanced.py
+# token_stats_enhanced_en.py
 import requests
 import json
 import time
@@ -8,7 +8,7 @@ ROACORE_TOKEN_MINT = "5tB5D6DGJMxxHYmNkfJNG237x6pZGEwTzGpUUh62yQJ7"
 
 
 def call_solana_rpc_with_timing(endpoint, method, params=None, timeout=60):
-    """응답 시간 측정과 함께 Solana RPC 호출"""
+    """Call Solana RPC with response time measurement"""
 
     payload = {
         "jsonrpc": "2.0",
@@ -26,7 +26,7 @@ def call_solana_rpc_with_timing(endpoint, method, params=None, timeout=60):
         end_time = time.time()
         response_time = end_time - start_time
 
-        print(f"   응답 시간: {response_time:.2f}초")
+        print(f"   Response time: {response_time:.2f}s")
 
         if response.status_code == 200:
             result = response.json()
@@ -46,24 +46,24 @@ def call_solana_rpc_with_timing(endpoint, method, params=None, timeout=60):
 
 
 def test_rpc_capabilities(endpoint):
-    """RPC 기능 테스트"""
+    """Test RPC capabilities"""
 
-    print(f"\n🔍 RPC 기능 테스트: {endpoint}")
+    print(f"\n🔍 RPC Capability Test: {endpoint}")
     print("-" * 50)
 
     tests = [
-        ("getHealth", [], "기본 연결"),
-        ("getVersion", [], "버전 정보"),
-        ("getSlot", [], "현재 슬롯"),
-        ("getTokenSupply", [ROACORE_TOKEN_MINT], "토큰 공급량"),
-        ("getTokenLargestAccounts", [ROACORE_TOKEN_MINT], "대형 계정")
+        ("getHealth", [], "Basic connection"),
+        ("getVersion", [], "Version info"),
+        ("getSlot", [], "Current slot"),
+        ("getTokenSupply", [ROACORE_TOKEN_MINT], "Token supply"),
+        ("getTokenLargestAccounts", [ROACORE_TOKEN_MINT], "Largest accounts")
     ]
 
     results = {}
 
     for method, params, description in tests:
         try:
-            print(f"   테스트: {description} ({method})")
+            print(f"   Testing: {description} ({method})")
             result, response_time = call_solana_rpc_with_timing(
                 endpoint, method, params, timeout=30
             )
@@ -72,7 +72,7 @@ def test_rpc_capabilities(endpoint):
                 'response_time': response_time,
                 'data_size': len(str(result)) if result else 0
             }
-            print(f"   ✅ 성공 (데이터 크기: {results[method]['data_size']} bytes)")
+            print(f"   ✅ Success (Data size: {results[method]['data_size']} bytes)")
 
         except Exception as e:
             results[method] = {
@@ -80,15 +80,15 @@ def test_rpc_capabilities(endpoint):
                 'error': str(e),
                 'response_time': None
             }
-            print(f"   ❌ 실패: {e}")
+            print(f"   ❌ Failed: {e}")
 
     return results
 
 
 def get_token_supply_enhanced(endpoint, token_mint):
-    """개선된 토큰 공급량 조회"""
+    """Enhanced token supply query"""
 
-    print("토큰 공급량 조회 중...")
+    print("Getting token supply...")
     result, response_time = call_solana_rpc_with_timing(
         endpoint, "getTokenSupply", [token_mint], timeout=60
     )
@@ -96,92 +96,92 @@ def get_token_supply_enhanced(endpoint, token_mint):
 
 
 def get_token_largest_accounts_enhanced(endpoint, token_mint):
-    """개선된 토큰 대형 계정 조회 (여러 방법 시도)"""
+    """Enhanced largest token accounts query (multiple methods)"""
 
     methods = [
-        # 방법 1: 기본적인 방법
+        # Method 1: Basic approach
         {
             "params": [token_mint],
-            "description": "기본 방법"
+            "description": "Basic method"
         },
-        # 방법 2: commitment 지정
+        # Method 2: Specify commitment
         {
             "params": [token_mint, {"commitment": "confirmed"}],
-            "description": "confirmed commitment"
+            "description": "Confirmed commitment"
         },
-        # 방법 3: commitment + encoding 지정
+        # Method 3: Commitment + encoding
         {
             "params": [token_mint, {"commitment": "finalized", "encoding": "jsonParsed"}],
-            "description": "finalized commitment + jsonParsed"
+            "description": "Finalized commitment + jsonParsed"
         }
     ]
 
     for method in methods:
         try:
-            print(f"대형 계정 조회 시도: {method['description']}")
+            print(f"Attempting largest accounts query: {method['description']}")
             result, response_time = call_solana_rpc_with_timing(
                 endpoint, "getTokenLargestAccounts", method['params'], timeout=60
             )
-            print(f"   ✅ {method['description']} 성공")
+            print(f"   ✅ {method['description']} success")
             return result, response_time
 
         except Exception as e:
-            print(f"   ❌ {method['description']} 실패: {e}")
-            # 다음 방법 시도를 위해 잠시 대기
+            print(f"   ❌ {method['description']} failed: {e}")
+            # Wait before trying next method
             time.sleep(2)
             continue
 
-    raise Exception("모든 방법 실패")
+    raise Exception("All methods failed")
 
 
 def analyze_token_enhanced(token_mint):
-    """개선된 토큰 분석 (RPC 테스트 포함)"""
+    """Enhanced token analysis (with RPC testing)"""
 
     endpoints = [
         {
             "url": "https://api.mainnet-beta.solana.com",
-            "name": "Solana 공식 RPC",
-            "type": "공개"
+            "name": "Solana Official RPC",
+            "type": "Public"
         },
         {
             "url": "https://rpc.ankr.com/solana",
             "name": "Ankr RPC",
-            "type": "공개"
+            "type": "Public"
         },
-        # QuickNode는 개인 정보이므로 주석 처리
+        # QuickNode is private info, so commented out
         # {
         #     "url": "https://your-quicknode-url.com/",
         #     "name": "QuickNode",
-        #     "type": "프리미엄"
+        #     "type": "Premium"
         # }
     ]
 
     for endpoint_info in endpoints:
         endpoint = endpoint_info["url"]
         print(f"\n{'=' * 60}")
-        print(f"🔄 시도 중: {endpoint_info['name']} ({endpoint_info['type']})")
+        print(f"🔄 Trying: {endpoint_info['name']} ({endpoint_info['type']})")
         print(f"URL: {endpoint}")
         print(f"{'=' * 60}")
 
-        # 1. RPC 기능 테스트
+        # 1. Test RPC capabilities
         capabilities = test_rpc_capabilities(endpoint)
 
-        # 2. 토큰 분석 시도 (기능 테스트에서 성공한 경우만)
+        # 2. Attempt token analysis (only if capability test succeeded)
         if capabilities.get('getTokenSupply', {}).get('success') and \
                 capabilities.get('getTokenLargestAccounts', {}).get('success'):
 
             try:
-                print(f"\n📊 토큰 분석 시작...")
+                print(f"\n📊 Starting token analysis...")
 
-                # 토큰 공급량 조회
+                # Get token supply
                 supply_info, supply_time = get_token_supply_enhanced(endpoint, token_mint)
                 decimals = supply_info['value']['decimals']
                 total_supply = float(supply_info['value']['amount']) / (10 ** decimals)
 
-                print(f"총 공급량: {total_supply:,.2f} ROA")
+                print(f"Total supply: {total_supply:,.2f} ROA")
                 print(f"Decimals: {decimals}")
 
-                # 대형 계정 조회
+                # Get largest accounts
                 largest_accounts, accounts_time = get_token_largest_accounts_enhanced(endpoint, token_mint)
 
                 holders = []
@@ -192,11 +192,11 @@ def analyze_token_enhanced(token_mint):
                         'balance': balance
                     })
 
-                print(f"\n✅ 성공: {endpoint_info['name']}")
-                print(f"📈 성능 정보:")
-                print(f"   - 토큰 공급량 조회: {supply_time:.2f}초")
-                print(f"   - 대형 계정 조회: {accounts_time:.2f}초")
-                print(f"   - 총 소요 시간: {supply_time + accounts_time:.2f}초")
+                print(f"\n✅ Success: {endpoint_info['name']}")
+                print(f"📈 Performance info:")
+                print(f"   - Token supply query: {supply_time:.2f}s")
+                print(f"   - Largest accounts query: {accounts_time:.2f}s")
+                print(f"   - Total time: {supply_time + accounts_time:.2f}s")
 
                 return {
                     'holders': holders,
@@ -212,22 +212,22 @@ def analyze_token_enhanced(token_mint):
                 }
 
             except Exception as e:
-                print(f"❌ 토큰 분석 실패: {e}")
+                print(f"❌ Token analysis failed: {e}")
 
         else:
-            print(f"❌ 필수 RPC 메서드 지원 안함")
+            print(f"❌ Required RPC methods not supported")
 
-        # 다음 엔드포인트 시도 전 대기
-        print(f"\n⏱️  다음 엔드포인트 시도까지 3초 대기...")
+        # Wait before trying next endpoint
+        print(f"\n⏱️  Waiting 3 seconds before next endpoint...")
         time.sleep(3)
 
-    return {'success': False, 'error': '모든 엔드포인트 실패'}
+    return {'success': False, 'error': 'All endpoints failed'}
 
 
 if __name__ == "__main__":
-    print("ROA CORE 토큰 분석 (고급 진단 포함)")
-    print(f"토큰 주소: {ROACORE_TOKEN_MINT}")
-    print(f"분석 시작 시간: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print("ROA CORE Token Analysis (Advanced Diagnostics)")
+    print(f"Token address: {ROACORE_TOKEN_MINT}")
+    print(f"Analysis start time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
     result = analyze_token_enhanced(ROACORE_TOKEN_MINT)
 
@@ -236,31 +236,31 @@ if __name__ == "__main__":
         perf = result['performance']
         endpoint_info = result['endpoint_info']
 
-        print(f"\n🏆 분석 완료 - {endpoint_info['name']} 사용")
+        print(f"\n🏆 Analysis complete - Using {endpoint_info['name']}")
         print("=" * 60)
 
         for i, holder in enumerate(holders[:5], 1):
-            print(f"{i}. 주소: {holder['address']}")
-            print(f"   잔액: {holder['balance']:,.6f} ROA")
+            print(f"{i}. Address: {holder['address']}")
+            print(f"   Balance: {holder['balance']:,.6f} ROA")
             print("-" * 60)
 
-        # 통계
+        # Statistics
         top5_balance = sum(h['balance'] for h in holders[:5])
         percentage = (top5_balance / result['total_supply']) * 100
 
-        print(f"\n📊 통계")
-        print(f"   상위 5개 홀더 총 잔액: {top5_balance:,.2f} ROA")
-        print(f"   전체 공급량 대비: {percentage:.2f}%")
-        print(f"   사용된 RPC: {endpoint_info['name']} ({endpoint_info['type']})")
-        print(f"   총 응답 시간: {perf['total_time']:.2f}초")
+        print(f"\n📊 Statistics")
+        print(f"   Top 5 holders total balance: {top5_balance:,.2f} ROA")
+        print(f"   Percentage of total supply: {percentage:.2f}%")
+        print(f"   RPC used: {endpoint_info['name']} ({endpoint_info['type']})")
+        print(f"   Total response time: {perf['total_time']:.2f}s")
 
-        # JSON 출력
-        print(f"\n📋 JSON 형태:")
+        # JSON output
+        print(f"\n📋 JSON format:")
         print(json.dumps(holders[:5], indent=2, ensure_ascii=False))
 
     else:
-        print(f"\n❌ 분석 실패: {result['error']}")
-        print("\n💡 권장사항:")
-        print("1. 프리미엄 RPC 서비스 (QuickNode, Alchemy) 사용")
-        print("2. Rate limiting 회피를 위한 지연 시간 증가")
-        print("3. 수동 확인: https://solscan.io/token/5tB5D6DGJMxxHYmNkfJNG237x6pZGEwTzGpUUh62yQJ7")
+        print(f"\n❌ Analysis failed: {result['error']}")
+        print("\n💡 Recommendations:")
+        print("1. Use premium RPC services (QuickNode, Alchemy)")
+        print("2. Increase delay time to avoid rate limiting")
+        print("3. Manual check: https://solscan.io/token/5tB5D6DGJMxxHYmNkfJNG237x6pZGEwTzGpUUh62yQJ7")
